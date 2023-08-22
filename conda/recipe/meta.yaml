@@ -1,6 +1,18 @@
 # SPDX-FileCopyrightText: 2023 geisserml <geisserml@gmail.com>
 # SPDX-License-Identifier: BSD-3-Clause or Apache-2.0
 
+# NOTE
+# 
+# This branch attempted to bundle the pdfium binaries with conda packages, like we do for pypi wheels.
+# However, conda does not support arch specific but python version independent packages, so we'd have to build for each version separately, which is not elegant.
+# Also, bundling dynamic libraries is against the spirit of conda (as a system package manager), contrary to PyPI (as python only).
+# 
+# Therefore, the clean solution would be to package pdfium-binaries separately on conda, so pypdfium2 can just depend on pdfium and be noarch.
+# This will require a new setup mode to bundle bindings only, and a way to pass additional runtime libdirs to ctypesgen.
+# Also we may need to pin the pdfium requirement to the exact version the bindings were built for. (Strictly speaking, binaries and bindings belong together. This may not seem overly relevant since ctypesgen makes if guards for symbols and pdfium's public API is very stable, but in principle mismatched bindings can cause undefined behavior if parameters changed.)
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 # FIXME since conda isolates each build, our data/ cache is no use...
 
 # usage: VERSION=... conda build conda/ --output-folder conda/out/
@@ -24,13 +36,6 @@ build:
     - PDFIUM_BINARY
   script: {{ PYTHON }} -m pip install . -v --no-deps --no-build-isolation
   number: 0
-  # FIXME pypdfium2 is arch specific but python independent
-  # If we have `noarch: python` we will be python independent but incorrect, if we don't have it we will be correct but tied to a specific python version
-  # So we see the following options, each with their own complications:
-  # - Build python specific packages (inelegant, but the only choice supported by conda)
-  # - Get conda changed (would be clean, but out of our hands)
-  # - Edit the generated archives (risky, but might achieve what we want)
-  # For now, we decided to build python specific packages, though it will consume a lot more CI runtime than PyPI packages.
 
 requirements:
   build:
