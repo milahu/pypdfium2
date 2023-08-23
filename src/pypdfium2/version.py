@@ -1,8 +1,6 @@
 # SPDX-FileCopyrightText: 2023 geisserml <geisserml@gmail.com>
 # SPDX-License-Identifier: Apache-2.0 OR BSD-3-Clause
 
-# TODO investigate if we could turn this into a yaml file?
-
 __all__ = ("V_PYPDFIUM2", "V_LIBPDFIUM", "V_BUILDNAME", "V_PDFIUM_IS_V8")
 
 V_MAJOR = 4
